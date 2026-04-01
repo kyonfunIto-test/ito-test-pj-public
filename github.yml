@@ -1,0 +1,19 @@
+stages:
+  - security
+
+wiz-security-scan:
+  stage: security
+  image: ubuntu:latest
+  before_script:
+    - apt-get update && apt-get install -y curl
+  script:
+    - curl -Lo wizcli https://downloads.wiz.io/v1/wizcli/latest/wizcli-linux-amd64
+    - chmod +x wizcli
+    # すべての検出結果を表示（フィルタリングなし）
+    - ./wizcli scan dir . --sast-no-gitignore --by-policy-hits DISABLED
+  variables:
+    WIZ_CLIENT_ID: $WIZ_CLIENT_ID
+    WIZ_CLIENT_SECRET: $WIZ_CLIENT_SECRET
+  only:
+    - merge_requests
+  allow_failure: false
